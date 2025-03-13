@@ -1,10 +1,14 @@
 import { useState } from "react";
 import "./app.css";
-import Task from "./Task";
-import TaskHookForm from "./TaskHookForm";
-import PeopleForm from "./PeopleForm";
+import Task from "./components/Task.jsx";
+import TaskHookForm from "./components/TaskHookForm.jsx";
+import PeopleForm from "./components/PeopleForm.jsx";
 import { initialTasks, initialTeam } from "./data";
+import { ToastContainer } from 'react-toastify';
 import { toast } from 'react-toastify';
+import { nanoid } from 'nanoid';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 function App() {
@@ -12,23 +16,45 @@ function App() {
   const [team, setTeam] = useState(initialTeam);
 
   function handleTaskSubmit(yeniTask) {
-    setTasks([yeniTask, ...tasks])
+    const newTask = { ...yeniTask, id: nanoid(5) };
+    setTasks([yeniTask, ...tasks]);
+    toast.success('Yeni görev oluşturuldu.');
   }
 
   function handlePeopleSubmit(yeniKisi) {
-    setTeam([...team, yeniKisi])
+    setTeam([...team, yeniKisi]);
+    toast.success('Yeni kişi oluşturuldu.');
   }
 
   function handleComplete(id) {
-    const tasksCopy = [...tasks];
-    const ilgiliTask = tasksCopy.filter(t => t.id === id)[0];
-    ilgiliTask.status = "yapıldı";
-    setTasks(tasksCopy);
-
-    toast.success(`Tebrikler! "${ilgiliTask.title}" tamamlandı!`);
+    const updatedTasks = tasks.map((t) => {
+      if (t.id === id) {
+        return {
+          ...t,
+          status: 'yapıldı',
+        };
+      } else {
+        return t;
+      }
+    });
+    setTasks(updatedTasks);
+    toast.success(`${id} id'li görev tamamlandı.`);
   }
 
   return (
+    <>
+    <ToastContainer
+        position="top-center"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="dark"
+      />
     <div className="app">
       <div className="formColumn">
         <div className="form-container">
@@ -65,6 +91,7 @@ function App() {
       </div>
 
     </div>
+    </>
   );
 }
 
